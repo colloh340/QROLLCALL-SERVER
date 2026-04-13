@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall {% endblock %}
+{% block content %} 
+{% if user.is_authenticated %}
+
+<style>
+    /* Default styles for larger screens */
+    
+    .parent-div {
+        display: flex;
+    }
+    .child-div{
+        display: flex;
+        align-items: center;
+    }
+    .fc-toolbar-title {
+        font-size: 20px!important;
+    }
+    .fc-button{
+        font-size: 14px!important;
+    }
+
+    /* Center child-div on small screens */
+    @media (max-width: 576px) {
+        .parent-div {
+            justify-content: center; /* Center horizontally */
+        }
+
+        .child-div {
+            text-align: center; /* Align content within the child div */
+            display: block;
+
+        }
+
+        .child-div img {
+            margin: 0 auto; /* Center the image */
+        }
+    }
+
+</style>
+<div class="container">
+    <div class="text-wrapper m-2 mt-lg-3 mb-lg-3 row">
+        <div class="col-6">
+            <div class="fs-2 fw-bold text-dark">Dashboard</div>
+            <p class="fs-5 text-muted mt-2">
+                {% if is_admin %}
+                Admin
+                {% elif is_staff %}
+                Staff 
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-6">
+            <div class="">
+                <div class="card-body d-flex flex-row justify-content-center">
+                    <i class="fa-regular fs-4 fa-clock  text-dark"></i>
+                    <span class="fs-4 text-dark ms-2 ms-lg-3" id="display-time"></span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row m-2 card">
+        <div class="col-lg-12 card-body">
+            <div class="row">
+                <div class="col-sm-8 parent-div">
+                    <div class="child-div">
+                        <div>
+                            <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" height="50px" width="50px">
+                        </div>
+                        <div class="ms-2">
+                            <p class="card-title fs-5">{{ user.first_name }} {{ user.last_name }}</p>
+                            <p class="card-subtitle mb-2 text-muted small" id="greeting"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-4 mt-sm-2 d-flex justify-content-center">
+                    <button class="btn btn-outline-primary btn-sm d-flex align-items-center" onclick="window.open('/profile', '_blank');">
+                        Manage Account
+                        <i class="fa-solid fa-up-right-from-square ms-2 fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row m-2 g-4">
+        <div class="col-lg-7 card p-2"  style="height: auto">
+            {% if is_admin %}
+                {% include 'admin_dashboard.html' %}
+        
+            {% elif is_staff %}
+                {% include 'staff_dashboard.html' %}
+            {% else %}
+                <h1>Hello {{ user.first_name }} {{ user.last_name }}. Access service from mobile</h1>
+            {% endif %}
+        </div>
+        <div class="col-lg-4 ms-auto">
+            <div id="calendar" class="card"></div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth'
+                    });
+                    calendar.render();
+                });
+            </script>
+        </div>
+    </div>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'pm' : 'am';
+
+            // Determine the time of day
+            let timeOfDay;
+            if (hours >= 5 && hours < 12) {
+                timeOfDay = "Good morning";
+            } else if (hours >= 12 && hours < 17) {
+                timeOfDay = "Good afternoon";
+            } else if (hours >= 17 && hours < 21) {
+                timeOfDay = "Good evening";
+            } else {
+                timeOfDay = "Good night";
+            }
+
+            // Format time with am/pm and time of day
+            const formattedHours = String(hours % 12 || 12).padStart(2, '0'); // Convert 24-hour format to 12-hour format
+            const formattedTime = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+
+            // Display the time in the HTML element
+            const display = document.getElementById('display-time');
+            const greeting = document.getElementById('greeting');
+            if (display) {
+                display.textContent = formattedTime;
+            }
+            if(greeting){
+                greeting.textContent = timeOfDay;
+            }
+        }
+
+    
+        // Update the time every second
+        setInterval(updateTime, 1000);
+    
+        // Initialize time immediately
+        updateTime();
+    </script>
+</div>
+
+
+{% endif %}
+
+{% endblock %}

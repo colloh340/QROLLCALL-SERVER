@@ -1,0 +1,88 @@
+{% load static %}
+
+<div class="row text-muted">
+    <div class="col-md-6 mt-4">
+        <div class="row">
+            <div class="col-6  d-flex flex-column align-items-center " onclick="window.location.href = '/lecturer'">
+                <div class="card bg-success" style="width: 60px;">
+                    <div class="card-body">
+                        <i class="fa-solid fa-chalkboard-user fs-3" style="color: #e9e9e9;;"></i>
+                    </div>
+                </div>
+                <p class="text-center mt-2 small">Lecturers</p>
+                <p class="text-center mt-2" id="enrolled-lecturer">{{ additional_info.total_staff }}</p>
+            </div>
+            <div class="col-6 d-flex flex-column align-items-center " onclick="window.location.href = '/student'">
+                <div class="card bg-success" style="width: 60px;">
+                    <div class="card-body">
+                        <i class="fa-solid fa-user-graduate fs-3" style="color: #e9e9e9;"></i>
+                    </div>
+                </div>
+                <p class="text-center mt-2 small">Students</p>
+                <p class="text-center mt-2" id="enrolled-students">{{ additional_info.total_students }}</p>
+            </div>
+        </div>
+        
+    </div>
+    <div class="col-md-6 mt-4">
+        <div class="row">
+            <div class="col-6 d-flex flex-column align-items-center ">
+                <div class="card bg-success" style="width: 60px;">
+                    <div class="card-body">
+                        <i class="fa-solid fa-graduation-cap fs-3" style="color: #e9e9e9;"></i>
+                    </div>
+                </div>
+                <p class="text-center mt-2 small">Courses</p>
+                <p class="text-center mt-2" id="enrolled-courses">{{ additional_info.total_courses }}</p>
+            </div>
+            <div class="col-6 d-flex flex-column align-items-center ">
+                <div class="card bg-success" style="width: 60px;">
+                    <div class="card-body">
+                        <i class="fa-solid fa-book fs-3" style="color: #e9e9e9;"></i>
+                    </div>
+                </div>
+                <p class="text-center mt-2 small">Units</p>
+                <p class="text-center mt-2" id="enrolled-units">{{ additional_info.total_units }}</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row mt-4">
+    <div class="col-md-6 mt-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <p class="card-title">Attendance Compliance</p>
+                    <div id="gaugeChart" style="height: 200px; max-width: 200px;"></div>
+
+                    <!-- <canvas id="attendance-compliance" width="100" height="100"></canvas> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mt-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                    <p class="card-title text-center">Attendance Distribution</p>
+                    <div>
+                        <canvas id="attendance-distribution" width="200px" height="200px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-2">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex flex-column">
+                <p class="card-title">Attendance Trends</p>
+                <div id="lineChart"  class="w-100 overflow-hidden"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/admin.js' %}"></script>

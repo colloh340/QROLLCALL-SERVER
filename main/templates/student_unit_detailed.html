@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | {{ report.student.registration_number }} {% endblock %}
+{% block content %}
+
+<!-- Header Section -->
+<!-- <nav class="navbar navbar-light bg-white shadow-sm p-3 mb-4 rounded">
+    <div class="d-flex align-items-center w-100">
+        <img src="{% static 'img/ic_logo_1.jpg' %}" alt="Logo" width="50" height="50" class="me-3">
+        <div class="text-center flex-grow-1">
+            <p class="fw-bold fs-4 text-primary mb-1">QUALITY MANAGEMENT SYSTEM</p>
+            <p class="fs-5 text-secondary mb-1">{{ report.student.registration_number }}</p>
+            <p class="fs-5 text-secondary mb-1">{{ report.student.name }}</p>
+        </div>
+    </div>
+</nav> -->
+
+<!-- Filter Section -->
+<div class="container mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <label for="filterDropdown" class="fw-bold">Filter:</label>
+            <select id="filterDropdown" class="form-select d-inline w-auto">
+                <option value="all">All</option>
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+            </select>
+        </div>
+        <button id="exportReport" class="btn btn-outline-primary">
+            <i class="fa-solid fa-file-export"></i> Export
+        </button>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary fw-bold fs-5">Student Information</h5>
+            
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ report.student.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Student ID</th>
+                        <td>{{ report.student.registration_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <td>{{ report.student.department }}</td>
+                    </tr>
+                    <tr>
+                        <th>Course</th>
+                        <td>{{ report.student.course }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Unit Summary Section -->
+<div class="container mt-2">
+    <div class="card shadow-sm border-light rounded-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary fw-bold fs-5">Unit Summary</h5>
+            
+            {% for unit in report.units %}
+            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <!-- Unit Info -->
+                <div>
+                    <p class="mb-1 fw-bold">{{ unit.unit_name }} ({{ unit.unit_code }})</p>
+                </div>
+            
+                <!-- Attendance Stats -->
+                <div class="d-flex flex-wrap justify-content-center gap-2 text-center">
+                    <span class="badge bg-success px-3 py-2">✅ Present: {{ unit.attended_count }}/{{ unit.total_sessions }}</span>
+                    <span class="badge bg-danger px-3 py-2">❌ Absent: {{ unit.missed_count }}/{{ unit.total_sessions }}</span>
+                    <span class="badge bg-primary px-3 py-2">📊 Compliance: {{ unit.compliance_percentage }}%</span>
+                </div>
+            </div>
+            
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Attendance Table -->
+<div class="container mt-3">
+    <div class="card shadow-sm border-light rounded-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary fw-bold fs-5">Attendance</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped caption-bottom">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Unit</th>
+                            <th>Date</th>
+                            <th>Lecturer</th>
+                            <th>Status</th>
+                            <th>Check-in Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTable">
+                        {% for unit in report.units %}
+                            {% for attendance in unit.attendance_details %}
+                            <tr class="attendance-row" data-status="{{ attendance.status|lower }}">
+                                <th>{{ forloop.parentloop.counter }}.{{ forloop.counter }}</th>
+
+                                <!-- Unit Code & Name -->
+                                <td>
+                                    <span class="fw-bold text-dark">{{ unit.unit_code }}</span> <br>
+                                    <span class="text-muted small">{{ unit.unit_name }}</span>
+                                </td>
+
+                                <!-- Date & Time -->
+                                <td>
+                                    <span class="fw-bold">{{ attendance.attendance_date }}</span> <br>
+                                    <span class="text-muted small">{{ attendance.start_time }} - {{ attendance.end_time }}</span>
+                                </td>
+
+                                <!-- Lecturer -->
+                                <td>{{ attendance.lecturer }}</td>
+
+                                <!-- Status -->
+                                <td>
+                                    {% if attendance.status == "Present" %}
+                                        <span class="badge bg-success p-2">Present</span>
+                                    {% else %}
+                                        <span class="badge bg-danger p-2">Absent</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Check-in Time & Time Status -->
+                                <td>
+                                    {% if attendance.status == "Present" %}
+                                        <span class="fw-bold">{{ attendance.check_in_time }}</span><br>
+                                        <span class="text-muted small {% if attendance.time_status == 'On_time' %}text-success{% else %}text-warning{% endif %}">
+                                            {{ attendance.time_status }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted">No attendance records found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let filterDropdown = document.getElementById("filterDropdown");
+    let attendanceTable = document.getElementById("attendanceTable").getElementsByTagName("tr");
+
+    filterDropdown.addEventListener("change", function () {
+        let filterValue = this.value;
+        for (let row of attendanceTable) {
+            let status = row.getAttribute("data-status");
+            if (filterValue === "all" || status === filterValue) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}

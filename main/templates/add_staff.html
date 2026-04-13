@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Sign Up {% endblock %}
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row w-100 d-flex align-items-center justify-content-center px-3">
+        
+        {% if not user.is_authenticated %}
+        <div class="col-lg-4 col-md-5 text-center mb-4 p-4 shadow-sm rounded-3 bg-light">
+            <img src="https://ik.imagekit.io/anthonyalando/Soft_Connect/user.png?updatedAt=1682239876486" alt="Sign Up" class="mb-3" width="80">
+            <h1 class="fw-bold text-dark">Welcome!</h1>
+            <p class="fs-5 text-muted mt-2 mb-2">Create an account to get started.</p>
+        </div>
+        {% endif %}
+
+        <div class="{% if not user.is_authenticated %} col-md-7 col-lg-5 {% endif %} mx-auto">
+            <div class="card shadow-lg p-4 bg-light rounded-4">
+                <div id="container_add_staff"></div>
+                {% if not user.is_authenticated %}
+                    <div class="text-center mt-3">
+                        <p class="text-muted">Already have an account?</p>
+                        <a href="/auth/login/web" class="text-primary fw-bold login-link">Login here</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'js/lecturer.js' %}"></script>
+
+<style>
+    .login-link {
+        text-decoration: none;
+        transition: color 0.3s ease-in-out;
+    }
+    .login-link:hover {
+        color: #0d6efd; /* Bootstrap primary blue */
+        text-decoration: underline;
+    }
+</style>
+
+{% endblock %}

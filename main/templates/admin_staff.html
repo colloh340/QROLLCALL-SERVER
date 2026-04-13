@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Staffs {% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Search & Filter Section -->
+    <div class="card shadow-sm p-3 mb-3">
+        <div class="row g-3 align-items-center">
+            <!-- Search Bar -->
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="tableSearch" class="form-control" placeholder="Search by name or email">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Department -->
+            <div class="col-md-4">
+                <select id="input-department-code" name="input-department-code" class="form-select">
+                    <option value="" selected disabled>Filter by Department</option>
+                    {% for department in departments %}
+                        <option value="{{ department.department_id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Add Staff Button -->
+            <div class="col-md-2 text-end">
+                <button type="button" class="btn btn-outline-primary w-100" id="btn_add_staff" onclick="window.location.href = '/lecturer/create';">
+                    <i class="fa fa-user-plus"></i> Add Staff
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Table -->
+    <div class="card shadow-sm p-3">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered">
+                <caption class="mt-2 text-muted">List of Staffs</caption>
+                <thead class="table-primary text-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody">
+                    {% for staff in staffs %}
+                    <tr onclick="delayedRedirect('/lecturer/report?u={{ staff.lecturer_id }}')">
+                        <td>{{ forloop.counter }}</td>
+                        <td class="searchable">{{ staff.name }}</td>
+                        <td class="searchable">{{ staff.email }}</td>
+                        <td>{{ staff.department }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if staffs|length == 0 %}
+                    <tr class="table-warning">
+                        <td colspan="4" class="text-center">No staff found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Search Functionality -->
+<script>
+    document.getElementById("tableSearch").addEventListener("keyup", function () {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#staffTableBody tr");
+
+        rows.forEach(row => {
+            let name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+            let email = row.querySelector("td:nth-child(3)").textContent.toLowerCase();
+
+            if (name.includes(searchValue) || email.includes(searchValue)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('#input-department-code').select2({
+            placeholder: "Select department",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+
+<!-- <script src="{% static 'js/lecturer.js' %}"></script> -->
+
+{% endblock %}

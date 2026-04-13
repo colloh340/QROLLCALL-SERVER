@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Reports | {{ report.unit_name }} {% endblock %}
+{% block content %} 
+<div class="pt-3">
+    <nav class="navbar navbar-light bg-light">
+        <div class="d-flex align-items-center w-100">
+            <!-- Brand aligned to the start -->
+            <div class="me-auto">
+                <!-- <span class="navbar-brand mb-0 h1">QROLLCALL</span> -->
+                <img src="{% static 'img/ic_logo_1.jpg' %}" alt="Logo" width="50" height="50">
+            </div>
+    
+            <!-- Centered content -->
+            <div class="d-flex flex-column flex-grow-1 text-center">
+                <p class="fw-bold fs-5 p-2 mb-0">QUALITY MANAGEMENT SYSTEM</p>
+                <p class="fs-5 p-2 mb-0">Class attendance form</p>
+            </div>
+        </div>
+    </nav>
+    
+    
+    <div class="row">
+        <div class="col-md-7 d-flex flex-column align-items-start text-start">
+            <div class="d-flex flex-column">
+                <p class="p-1 d-flex flex-column">
+                    <span class="">
+                        {{ report.unit_code }}
+                    </span>
+                    <span class="fw-lighter p-1 small text-muted opacity-75">
+                        Unit Code
+                    </span>
+                </p>
+                <p class="p-1 d-flex flex-column">
+                    <span class="">
+                        {{ report.unit_name }}
+                    </span>
+                    <span class="fw-lighter p-1 small text-muted opacity-75">
+                        Unit Name
+                    </span>
+                </p>
+                
+                <p class="p-1 d-flex flex-column">
+                    <span class="">
+                        {{ report.lecturer }}
+                    </span>
+                    <span class="fw-lighter p-1 small text-muted opacity-75">
+                        Lecturer
+                    </span>
+                </p>
+            </div>
+            
+        </div>
+        
+        <div class="col-md-5 d-flex flex-column align-items-start text-start">
+            <p class="p-1 d-flex flex-column">
+                <span class="">
+                    {{ report.date }}
+                </span>
+                <span class="fw-lighter p-1 small text-muted opacity-75">
+                    Date
+                </span>
+            </p>
+            <p class="p-1 d-flex flex-column">
+                <span class="">
+                    {{ report.start_time }} - {{ report.end_time }}
+                </span>
+                <span class="fw-lighter p-1 small text-muted opacity-75">
+                    Time
+                </span>
+            </p>
+            <div class="d-flex align-items-start text-start">
+
+                <p class="p-2 d-flex flex-column text-center">
+                    <span class="fs-5">
+                        {{ report.present_count }}
+                    </span>
+                    <span class="fw-lighter p-1 small text-success opacity-75">
+                        Present
+                    </span> 
+                </p>
+                <p class="p-2 d-flex flex-column text-center">
+                    <span class="fs-5">
+                        {{ report.absent_count }}
+                    </span>
+                    <span class="fw-lighter p-1 small text-danger opacity-75">
+                        Absent
+                    </span>
+                </p>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-3 mb-3">
+        <div class="row g-3 align-items-center">
+            
+            <!-- Filter Time -->
+            <div class="col-md-4">
+                <select id="input-status" name="status" class="form-select">
+                    <option value="" selected disabled>Present/Absent</option>
+                    <option value="all">All</option>
+                    <option value="present">Present</option>
+                    <option value="absent">Absent</option>
+                </select>
+            </div>
+            <!-- Filter Time -->
+            <div class="col-md-4">
+                <select id="input-time" name="time-status" class="form-select" disabled>
+                    <option value="" selected disabled>Filter Time</option>
+                    <option value="all">All</option>
+                    <option value="ontime">On time</option>
+                    <option value="late">Late</option>
+                </select>
+            </div>
+
+            <!-- Filter Button -->
+            <div class="col-md-2">
+                <button class="btn btn-primary" id="btn-filter"><i class="fa-solid fa-filter"></i> Filter</button>
+            </div>
+            <!-- Download  button -->
+            <div class="col-md-2">
+                <button class="btn btn-success" id="btn_download_pdf"><i class="fa-solid fa-download"></i> Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper table-responsive mt-2">
+        <table class="table table-hover table-striped table-bordered">
+            <caption class="mt-2" id="caption">All students</caption>
+            <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Student</th>
+                  <th scope="col">Timestamp</th>
+                  <th scope="col">Present/Absent</th>
+                </tr>
+              </thead>
+              <tbody id="students_table_body">
+                {% for student in report.present_students %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark">
+                                {{ student.registration_number }}
+                            </span>
+                            <span class="text-muted small opacity-75 pt-2">
+                                {{ student.name }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark">
+                                {{ student.check_in_time }}
+                            </span>
+                            <span class="small opacity-75 pt-2
+                                {% if student.time_status == 'late' %} text-danger {% else %} text-success {% endif  %}">
+                                {{ student.time_status }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>Present</td>
+                  </tr>
+
+                {% endfor %}
+                {% for student in report.absent_students %}
+                <tr class="table-warning">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark">
+                                {{ student.registration_number }}
+                            </span>
+                            <span class="text-muted small opacity-75 pt-2">
+                                {{ student.name }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        N/A
+                    </td>
+                    <td>Absent</td>
+                  </tr>
+
+                {% endfor %}
+                {% if report.present_count == 0 and report.absent_count == 0 %}
+                <tr class="table-warning">
+                    <th scope="row">_</th>
+                    <td> _</td>
+                    <td>_</td>
+                    <td>_</td>
+                  </tr>
+                {% endif  %}
+                
+              </tbody>
+        </table>
+    </div>
+    
+</div>
+<script>
+$(document).ready(function () {
+    $("#input-status").change(function () {
+        var status = $(this).val(); // Get selected status
+
+        if (status === "absent" || status === "all") {
+            $("#input-time").prop("disabled", true).val(""); // Disable and reset time filter
+        } else {
+            $("#input-time").prop("disabled", false); // Enable when not "absent"
+        }
+    });
+
+    $("#btn_download_pdf").click(function(){
+        let url = getUrl(true);
+
+        if(url === null){
+            return;
+        }
+        window.location.href = url;
+    })
+    $("#btn-filter").click(async function () {
+        // Get the URL for filtering
+        let url = getUrl(false);
+
+        if (url === null) {
+            return;
+        }
+
+        $("#modal-loading").modal("show");
+
+        try {
+            const response = await fetch(url, {
+                method: "GET"
+            });
+
+            $("#modal-loading").modal("hide");
+
+            if (!response.ok) {
+                console.log("Error occurred!");
+                alert("Failed to filter results");
+                return;
+            }
+
+            const data = await response.json(); 
+            createTableBody(data.report.students);
+        } catch (error) {
+            console.log("Fetch error: ", error);
+            $("#modal-loading").modal("hide");
+            alert("An error occurred while fetching data.");
+        }
+    });
+
+    function createTableBody(students) {
+        const tbody = $("#students_table_body");
+
+        // Clear the existing table content
+        tbody.html("");
+
+        students.forEach((student, index) => {
+            const row = `
+                <tr>
+                    <th scope="row">${index + 1}</th>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark">${student.registration_number}</span>
+                            <span class="text-muted small opacity-75 pt-2">${student.name}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark">${student.check_in_time}</span>
+                            <span class="small opacity-75 pt-2 ${student.time_status === 'late' ? 'text-danger' : 'text-success'}">
+                                ${student.time_status}
+                            </span>
+                        </div>
+                    </td>
+                    <td>${student.status}</td>
+                </tr>
+            `;
+
+            tbody.append(row); // Fix: Use jQuery `.append()` to add the row
+        });
+    }
+
+    function getUrl(pdf = false) {
+        let status = $("#input-status").val();
+        let time_status = $("#input-time").val();
+
+        let url = "/attendance/report?attendance={{ report.attendance_id }}";
+        let query = "";
+
+        // If both filters are empty, return null
+        if ((!status || status.length === 0) && (!time_status || time_status.length === 0)) {
+            return pdf ? `${url}&get=pdf` : null;
+        }
+
+        url += "&filter=true";
+
+        if (status && status.length !== 0) {
+            query += `&status=${status}`;
+        }
+
+        if (time_status && time_status.length !== 0) {
+            query += `&time=${time_status}`;
+        }
+
+        if (pdf) {
+            query += "&get=pdf";
+        }
+
+        return url + query;
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Reports {% endblock %}
+{% block content %} 
+<div>
+    <nav class="navbar navbar-light bg-light shadow-sm p-3 mb-4 rounded">
+        <div class="d-flex align-items-center w-100">
+            <div class="me-auto">
+                <img src="{% static 'img/ic_logo_1.jpg' %}" alt="Logo" width="50" height="50">
+            </div>
+    
+            <div class="d-flex flex-column flex-grow-1 text-center">
+                <p class="fw-bold fs-4 text-primary mb-2">QUALITY MANAGEMENT SYSTEM</p>
+                <p class="fs-5 text-secondary mb-0">{{ report.staff_name }} - Unit(s)</p>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title text-center text-secondary fw-bold fs-5">Staff Information</h5>
+                
+                <table class="table table-bordered mt-3">
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ report.staff_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Department</th>
+                            <td>{{ report.department }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ report.email }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="bg-light p-3 rounded mb-3 d-flex justify-content-between align-items-center">
+        <p class="fw-bold fs-5 mb-0"> Units - {{ report.units|length }} </p>
+        <div class="input-group w-50">
+            <input type="text" id="tableSearch" class="form-control" placeholder="Search for a unit..." aria-label="Search">
+            <button class="btn btn-primary" type="button" id="searchButton">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="table-wrapper table-responsive mt-2" id="my-units-table-wrapper">
+        <table class="table table-hover table-striped caption-bottom">
+            <caption class="mt-2">Units according to previous lectures.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Unit</th>
+                    <th scope="col">Tally</th>
+                    <th scope="col">Statistics</th>
+                </tr>
+            </thead>
+            <tbody id="unitsTable">
+                {% if report.units|length > 0 %}
+                {% for unit in report.units %}
+                <tr onclick="showModal('{{ unit.unit_code }}')">
+
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark unit-code">
+                                {{ unit.unit_code }}
+                            </span>
+                            <span class="text-muted small opacity-75 pt-2 unit-name">
+                                {{ unit.unit_name }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-secondary">
+                                total: <span class="text-primary">{{ unit.total_classes }}</span>
+                            </span>
+                            <span class="text-secondary pt-2">
+                                completed: <span class="text-success">{{ unit.completed_classes }}</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-secondary">
+                                Compliance: <span class="text-success">
+                                    {{ unit.total_compliance_percentage }}%
+                                </span>
+                            </span>
+                            
+                            <span class="text-secondary pt-2">
+                                Defaulters: <span class="text-danger">
+                                    {{ unit.total_non_compliance_percentage }}%
+                                </span>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="table-warning">
+                    <td colspan="4" class="text-center">
+                        No units/classes found.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- JavaScript for Search -->
+    <script>
+    document.getElementById("tableSearch").addEventListener("keyup", function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#unitsTable tr");
+    
+        rows.forEach(row => {
+            let unitCode = row.querySelector(".unit-code").textContent.toLowerCase();
+            let unitName = row.querySelector(".unit-name").textContent.toLowerCase();
+    
+            if (unitCode.includes(filter) || unitName.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+    
+    document.getElementById("searchButton").addEventListener("click", function() {
+        let searchValue = document.getElementById("tableSearch").value.trim();
+        if (searchValue) {
+            window.location.href = `/lecturer/report?u={{ staff_id }}&s=${encodeURIComponent(searchValue)}`;
+        }
+    });
+    </script>
+    
+</div>
+
+<script>
+    function showModal(unit_code) {
+
+    document.getElementById("full_report_link").href = `/lecturer/report?u={{ staff_id }}&s=${unit_code}&f=true`;
+
+    var reportModal = new bootstrap.Modal(document.getElementById("unit_report_modal"));
+    reportModal.show();
+}
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="unit_report_modal" tabindex="-1" aria-labelledby="unit_report_modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unit_report_modalLabel">Unit Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mt-1 mb-1">Choose an action below:</p>
+  
+                <div class="d-grid gap-2">
+                
+                    <div>
+                        <a id="full_report_link" href="#" class="btn btn-success w-100 mt-2"><i class="fa-solid fa-list"></i> Full Report</a>
+                        <small class="text-muted">View full report for this unit.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+{% endblock %}

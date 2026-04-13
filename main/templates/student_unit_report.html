@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Student | Report {% endblock %}
+{% block content %} 
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary fw-bold fs-5">Student Information</h5>
+            
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ report.student.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Student ID</th>
+                        <td>{{ report.student.registration_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <td>{{ report.student.department }}</td>
+                    </tr>
+                    <tr>
+                        <th>Course</th>
+                        <td>{{ report.student.course }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light p-3 rounded mb-3 d-flex justify-content-between align-items-center">
+    <p class="fw-bold fs-5 mb-0"> Units - {{ report.units|length }} </p>
+    <div class="input-group w-50">
+        <input type="text" id="searchUnitsInput" class="form-control" placeholder="Search for a unit..." aria-label="Search">
+        <button class="btn btn-primary" type="button" id="searchUnitsButton">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+</div>
+
+<div class="table-wrapper table-responsive mt-2" id="student-units-table-wrapper">
+    <table class="table table-hover table-striped caption-bottom">
+        <caption class="mt-2">Student units.</caption>
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Unit</th>
+                <th scope="col">Statistics</th>
+                <th scope="col">Compliance</th>
+            </tr>
+        </thead>
+        <tbody id="studentUnitsTable">
+            {% if report.units|length > 0 %}
+            {% for unit in report.units %}
+            <tr onclick="window.location.href = '/student/report?u={{ report.student.registration_number }}&s={{ unit.unit_code }}&full=true'">
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>
+                    <div class="d-flex flex-column">
+                        <span class="text-dark unit-code">
+                            {{ unit.unit_code }}
+                        </span>
+                        <span class="text-muted small opacity-75 pt-2 unit-name">
+                            {{ unit.unit_name }}
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <span class="text-secondary">
+                            Total sessions: <span class="text-primary">{{ unit.total_sessions }}</span>
+                        </span>
+                        <span class="text-secondary pt-2">
+                            Present: <span class="text-success">{{ unit.attended_count }}</span>
+                        </span>
+                        <span class="text-secondary pt-2">
+                            Absent: <span class="text-danger">{{ unit.missed_count }}</span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <span class="text-secondary">
+                            Compliance: <span class="text-success">
+                                {{ unit.compliance_percentage }}%
+                            </span>
+                        </span>
+                        
+                        <span class="text-secondary pt-2">
+                            Status: <span class=" {% if unit.compliance_status == 'Compliant' %}text-success{% else %} text-danger{% endif %}">
+                                {{ unit.compliance_status }}
+                            </span>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">
+                    <div class="alert alert-warning d-inline-block w-auto" role="alert">
+                        <p class="">No units found.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Search Filter Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchUnitsInput");
+    const searchButton = document.getElementById("searchUnitsButton");
+    const unitsTable = document.getElementById("studentUnitsTable").getElementsByTagName("tr");
+
+    function filterUnits() {
+        let query = searchInput.value.toLowerCase();
+
+        for (let row of unitsTable) {
+            let unitCode = row.querySelector(".unit-code")?.textContent.toLowerCase() || "";
+            let unitName = row.querySelector(".unit-name")?.textContent.toLowerCase() || "";
+
+            if (unitCode.includes(query) || unitName.includes(query)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    }
+
+    searchInput.addEventListener("keyup", filterUnits);
+    searchButton.addEventListener("click", filterUnits);
+});
+</script>
+{% endblock %}

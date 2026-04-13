@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Students {% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Filter & Search Section -->
+    <div class="card shadow-sm p-3 mb-3">
+        <div class="row g-3 align-items-center">
+            <!-- Search Bar -->
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="tableSearch" class="form-control" placeholder="Search by Name or Reg No">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter by Course -->
+            <div class="col-md-4">
+                <select id="input-course-code" name="input-course-code" class="form-select">
+                    <option value="" selected disabled>Filter by Course</option>
+                    {% for course in courses %}
+                        <option value="{{ course.course_code }}">{{ course.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Add Student Button -->
+            <div class="col-md-2 text-end">
+                <button type="button" class="btn btn-outline-primary w-100" id="btn_add_student">
+                    <i class="fa fa-user-plus"></i> Add Student
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="card shadow-sm p-3">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered">
+                <caption class="mt-2 text-muted">List of Students</caption>
+                <thead class="table-primary text-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Department</th>
+                        <th>Course</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    {% for student in students %}
+                    <tr onclick="delayedRedirect('/student/report?u={{ student.registration_number }}')">
+                        <td>{{ forloop.counter }}</td>
+                        <td class="searchable">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold reg-no">{{ student.registration_number }}</span>
+                                <span class="text-secondary mt-1 name">{{ student.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ student.department }}</td>
+                        <td>{{ student.course }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if students|length == 0 %}
+                    <tr class="table-warning">
+                        <td colspan="4" class="text-center">No students found</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Search -->
+<script>
+    document.getElementById("tableSearch").addEventListener("keyup", function () {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#studentTableBody tr");
+
+        rows.forEach(row => {
+            let regNo = row.querySelector(".reg-no").textContent.toLowerCase();
+            let name = row.querySelector(".name").textContent.toLowerCase();
+
+            if (regNo.includes(searchValue) || name.includes(searchValue)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('#input-course-code').select2({
+            placeholder: "Select course",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+
+<script src="{% static 'js/add_student.js' %}"></script>
+
+{% endblock %}

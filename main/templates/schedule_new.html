@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} QRollCall | Schedule{% endblock %}
+{% block content %} 
+<div class="card shadow-lg p-4 bg-light rounded-4">
+    <div id="container_add_student"></div>
+</div>
+<script src="{% static 'js/schedule_attendance.js' %}"></script>
+{% endblock %}

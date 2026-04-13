@@ -1,0 +1,173 @@
+.main-sidenav {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+  }
+  
+  .main-sidenav .overlap-group-wrapper {
+    background-color: #ffffff;
+    width: 100%;
+    min-height: 100%;
+  }
+  
+  .main-sidenav .overlap-group {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    /* border-radius: 16px; */
+    overflow-y: auto;
+    overflow-x: visible;
+    scrollbar-width: none;
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+
+  }
+  
+  .main-sidenav .navigation-drawer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+    align-items: flex-start;
+    padding: 12px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f7f2fa;
+    /* border-radius: var(--shape-corner-large); */
+  }
+  
+  .main-sidenav .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 16px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  
+  .main-sidenav .left {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    flex: 0 0 auto;
+  }
+  
+  .main-sidenav .label {
+    width: fit-content;
+    margin-top: -1.00px;
+    font-family: var(--m3-title-small-font-family);
+    font-weight: var(--m3-title-small-font-weight);
+    color: #49454f;
+    white-space: nowrap;
+    position: relative;
+    font-size: var(--m3-title-small-font-size);
+    letter-spacing: var(--m3-title-small-letter-spacing);
+    line-height: var(--m3-title-small-line-height);
+    font-style: var(--m3-title-small-font-style);
+  }
+  
+  .main-sidenav .active {
+    display: flex;
+    height: 56px;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    background-color: #e8def8;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  
+  .main-sidenav .state-layer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px 16px 16px;
+    position: relative;
+    flex: 1;
+    align-self: stretch;
+    flex-grow: 1;
+  }
+  
+  .main-sidenav .img {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .main-sidenav .text-wrapper {
+    flex: 1;
+    font-family: var(--m3-label-large-prominent-font-family);
+    font-weight: var(--m3-label-large-prominent-font-weight);
+    color: #4a4459;
+    position: relative;
+    font-size: var(--m3-label-large-prominent-font-size);
+    letter-spacing: var(--m3-label-large-prominent-letter-spacing);
+    line-height: var(--m3-label-large-prominent-line-height);
+    font-style: var(--m3-label-large-prominent-font-style);
+  }
+  
+  .main-sidenav .state-layer-wrapper {
+    display: flex;
+    height: 56px;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    border-radius: 100px;
+    /* overflow: hidden; */
+  }
+  
+  .main-sidenav .div {
+    flex: 1;
+    font-family: var(--m3-label-large-font-family);
+    font-weight: var(--m3-label-large-font-weight);
+    color: #49454f;
+    position: relative;
+    font-size: var(--m3-label-large-font-size);
+    letter-spacing: var(--m3-label-large-letter-spacing);
+    line-height: var(--m3-label-large-line-height);
+    font-style: var(--m3-label-large-font-style);
+  }
+  
+  .main-sidenav .divider {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0px 16px;
+    flex: 0 0 auto;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+  }
+  
+  .main-sidenav .divider-2 {
+    height: 1px;
+    object-fit: cover;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+  }
+  
+  .main-sidenav .x {
+    position: absolute;
+    width: 29px;
+    height: 28px;
+    top: 22px;
+    left: 200px;
+    background-image: url(./img/x.svg);
+    background-size: 100% 100%;
+  }
+  
+  

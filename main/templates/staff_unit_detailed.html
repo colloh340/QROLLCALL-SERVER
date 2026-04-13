@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% if report.units|length > 0 %}
+    {% block title %} QRollCall | {{ report.units.0.unit_code }} | Detailed {% endblock %}
+
+    {% block content %}
+    <style>
+        /* General Card Styling */
+        .class-section {
+            padding: 10px;
+        }
+    
+        .class-section .card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    
+        /* Completed Classes (Green Theme) */
+        .class-section[data-category="completed"] .card {
+            border-left: 5px solid #28a745;
+            background: #e9f7ef;
+        }
+    
+        .class-section[data-category="completed"] .card-title {
+            color: #218838;
+        }
+    
+        /* Incomplete Classes (Red Theme) */
+        .class-section[data-category="incomplete"] .card {
+            border-left: 5px solid #dc3545;
+            background: #fdecea;
+        }
+    
+        .class-section[data-category="incomplete"] .card-title {
+            color: #c82333;
+        }
+    
+        /* Table Styling */
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    
+        /* Clickable Row */
+        .clickable-row {
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+    
+        .clickable-row:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Icons */
+        .status-icon {
+            font-size: 18px;
+            padding: 5px;
+        }
+    
+        .text-success .status-icon {
+            color: #28a745;
+        }
+    
+        .text-danger .status-icon {
+            color: #dc3545;
+        }
+    
+        /* Action Buttons */
+        .delete-btn {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+    
+        .delete-btn:hover {
+            transform: scale(1.2);
+            color: #c82333;
+        }
+        /* Common Card Styling */
+        .student-section {
+                padding: 10px;
+            }
+        
+            .student-section .card {
+                border-radius: 12px;
+                overflow: hidden;
+            }
+        
+            /* Compliant Students */
+            .student-section[data-category="compliant"] .card {
+                border-left: 5px solid #28a745; /* Green border */
+                background: #e9f7ef; /* Light greenish */
+            }
+        
+            .student-section[data-category="compliant"] .card-title {
+                color: #218838;
+            }
+        
+            /* Non-Compliant Students */
+            .student-section[data-category="non-compliant"] .card {
+                border-left: 5px solid #dc3545; /* Red border */
+                background: #fdecea; /* Light reddish */
+            }
+        
+            .student-section[data-category="non-compliant"] .card-title {
+                color: #c82333;
+            }
+        
+            /* Table Styling */
+            .table-hover tbody tr:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        
+            /* Clickable Row */
+            .clickable-row {
+                cursor: pointer;
+                transition: background 0.2s ease-in-out;
+            }
+        
+            .clickable-row:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+        
+            /* Badge Styling */
+            .badge-success {
+                background-color: #28a745;
+                color: white;
+            }
+        
+            .badge-danger {
+                background-color: #dc3545;
+                color: white;
+            }
+    </style>
+    <nav class="navbar navbar-light bg-light shadow-sm p-3 mb-4 rounded">
+        <div class="d-flex align-items-center w-100">
+            <div class="me-auto">
+                <img src="{% static 'img/ic_logo_1.jpg' %}" alt="Logo" width="50" height="50">
+            </div>
+    
+            <div class="d-flex flex-column flex-grow-1 text-center">
+                <p class="fw-bold fs-4 text-primary mb-2">QUALITY MANAGEMENT SYSTEM</p>
+                <p class="fs-5 text-secondary mb-0">{{ report.units.0.unit_code }} Comprehensive Report</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filter Section -->
+    <div class="container mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <label for="filterDropdown" class="fw-bold">Filter:</label>
+                <select id="filterDropdown" class="form-select d-inline w-auto">
+                    <option value="all">All</option>
+                    <option value="compliant">Compliant Students</option>
+                    <option value="non-compliant">Non-Compliant Students</option>
+                    <option value="completed">Completed Classes</option>
+                    <option value="incomplete">Incomplete Classes</option>
+                </select>
+            </div>
+            
+            <button id="exportReport" class="btn btn-outline-primary">
+                <i class="fa-solid fa-file-export"></i> Export
+            </button>
+            
+            <script>
+                document.getElementById("exportReport").addEventListener("click", function () {
+                    // Get selected filter type
+                    var selectedType = document.getElementById("filterDropdown").value;
+                    
+                    // Construct the export URL dynamically
+                    var staffId = "{{ staff_id }}";
+                    var unitCode = "{{ report.units.0.unit_code }}";
+                    var exportUrl = `/lecturer/report?u=${staffId}&s=${unitCode}&pdf=true&type=${selectedType}`;
+                    
+                    // Open the PDF in a new tab
+                    window.open(exportUrl, "_blank");
+                });
+            </script>
+            
+    </div>
+
+    <!-- Unit Information Card -->
+<div class="container mt-2">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center text-secondary fw-bold fs-5">Unit Information</h5>
+            
+            <div class="row">
+                <!-- First Column -->
+                <div class="col-md-6">
+                    <p class="p-2"><strong>Unit Code:</strong> {{ report.units.0.unit_code }}</p>
+                    <p class="p-2"><strong>Unit Name:</strong> {{ report.units.0.unit_name }}</p>
+                    <p class="p-2"><strong>Lecturer:</strong> {{ report.units.0.lecturer_name }}</p>
+                    <p class="p-2"><strong>Total Classes:</strong> {{ report.units.0.total_classes }}</p>
+                </div>
+
+                <!-- Second Column -->
+                <div class="col-md-6">
+                    <p class="p-2"><strong>Compliance:</strong> <span class="badge bg-success">{{ report.units.0.total_compliance_percentage }}%</span></p>
+                    <p class="p-2"><strong>Defaulters:</strong> <span class="badge bg-danger">{{ report.units.0.total_non_compliance_percentage }}%</span></p>
+                    <p class="p-2"><strong>Completed Classes:</strong> <span class="badge bg-success">{{ report.units.0.completed_classes }}</span></p>
+                    <p class="p-2"><strong>Uncompleted Classes:</strong> <span class="badge bg-danger">{{ report.units.0.uncompleted_classes }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Completed Classes Table -->
+<div class="container mt-3 class-section" data-category="completed">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center fw-bold fs-5">Completed Lectures</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Unit</th>
+                            <th>Date</th>
+                            <th>Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in report.units.0.completed_classes_list %}
+                        <tr class="clickable-row" onclick="showModal('{{ unit.attendance_id }}')">
+                            <th>{{ forloop.counter }}</th>
+                            <td>{{ unit.unit__unit_code }} - {{ unit.unit__unit_name }}</td>
+                            <td>{{ unit.attendance_date }}</td>
+                            <td><i class="fa-solid fa-check status-icon text-success"></i></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">No completed classes.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Incomplete Classes Table -->
+<div class="container mt-3 class-section" data-category="incomplete">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h5 class="card-title text-center fw-bold fs-5">Incomplete Lectures</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Unit</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for unit in report.units.0.uncompleted_classes_list %}
+                        <tr>
+                            <th>{{ forloop.counter }}</th>
+                            <td>{{ unit.unit__unit_code }} - {{ unit.unit__unit_name }}</td>
+                            <td>{{ unit.attendance_date }}</td>
+                            <td>
+                                <i class="fa-solid fa-trash delete-btn status-icon text-danger" onclick="deleteClass('{{ unit.attendance_id }}')"></i>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted">No pending classes.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    <!-- Compliant Students Table -->
+    <div class="container mt-3 student-section" data-category="compliant">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title text-center fw-bold fs-5">Compliant Students</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Attendance</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in report.units.0.compliant_students %}
+                            <tr class="clickable-row" onclick="window.location.href = '/student/report?u={{ student.registration_number }}&s={{ report.units.0.unit_code }}&full=true'">
+                                <th>{{ forloop.counter }}</th>
+                                <td>{{ student.registration_number }} - {{ student.name }}</td>
+                                <td>✅ <span class="text-success">{{ student.total_attended }}</span> / ❌ <span class="text-danger">{{ student.total_absent }}</span></td>
+                                <td><span class="badge badge-success">{{ student.compliance_percentage }}%</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted">No compliant students.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Non-Compliant Students Table -->
+    <div class="container student-section mt-3" data-category="non-compliant">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title text-center fw-bold fs-5">Non-Compliant Students</h5>
+    
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <caption class="mt-2 text-danger fw-bold">
+                            Total Non-Compliant: {{ report.units.0.non_compliant_students|length }}
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Attendance</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if report.units.0.non_compliant_students|length > 0 %}
+                                {% for student in report.units.0.non_compliant_students %}
+                                <tr class="clickable-row" onclick="window.location.href = '/student/report?u={{ student.registration_number }}&s={{ report.units.0.unit_code }}&full=true'">
+                                    <th>{{ forloop.counter }}</th>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">{{ student.registration_number }}</span>
+                                            <span class="text-muted small pt-1">{{ student.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-success">✅ {{ student.total_attended }}</span> / 
+                                        <span class="text-danger">❌ {{ student.total_absent }}</span>
+                                    </td>
+                                    <td><span class="badge badge-danger">{{ student.compliance_percentage }}%</span></td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">
+                                        <div class="alert alert-danger d-inline-block w-auto" role="alert">
+                                            No students failed the 67% requirement.
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <script>
+        document.getElementById("filterDropdown").addEventListener("change", function() {
+            let selectedCategory = this.value;
+            document.querySelectorAll(".class-section, .student-section").forEach(section => {
+                section.style.display = selectedCategory === "all" || section.dataset.category === selectedCategory ? "block" : "none";
+            });
+        });
+
+        document.getElementById("exportReport").addEventListener("click", function() {
+            window.open("/export/report?unit={{ report.units.0.unit_code }}", "_blank");
+        });
+    </script>
+    <script>
+        function showModal(attendanceId) {
+        // Update the link inside the modal
+        document.getElementById("reportLink").href = `/attendance/report?attendance=${attendanceId}`;
+          
+        document.getElementById("download_report").href = `/attendance/report?attendance=${attendanceId}&get=pdf`;
+    
+        var reportModal = new bootstrap.Modal(document.getElementById("reportModal"));
+        reportModal.show();
+    }
+    
+    </script>
+    <!-- Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">View Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mt-1 mb-1">Choose an action below:</p>
+      
+                    <div class="d-grid gap-2">
+      
+                        <div>
+                            <a id="download_report" href="#" target="_blank" class="btn btn-primary w-100 mt-2"><i class="fa-solid fa-download" style="color: #f5f5f5;"></i> Download Attendance</a>
+                            <small class="text-muted">Download a report of attendance records.</small>
+                        </div>
+      
+                        <div>
+                            <a id="reportLink" href="#" class="btn btn-success w-100 mt-2"><i class="fa-solid fa-list"></i> View Attendance</a>
+                            <small class="text-muted">Check attendance details online.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+      </div>
+    {% endblock %}
+{% endif %}
