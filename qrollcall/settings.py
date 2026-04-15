@@ -21,6 +21,20 @@ pymysql.install_as_MySQLdb()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _coerce_bool(value, default=False):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "t", "yes", "y", "on"}:
+        return True
+    if normalized in {"0", "false", "f", "no", "n", "off", "release", "prod", "production"}:
+        return False
+    return default
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -28,12 +42,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET", default="B85GBWT84VUD32JBCLA5RA5N")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = _coerce_bool(config("DEBUG", default=True), default=True)
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
+    "localhost",
     "192.168.94.120",
-  
+    "113.30.191.232",
 ]
 
 
@@ -65,6 +80,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",  # Add your live domain here
     "http://192.168.94.120",   # For non-secure HTTP access (avoid in production)
+    "http://113.30.191.232",
+    "http://localhost:8000",  # development server
 
 ]
 
@@ -98,17 +115,26 @@ WSGI_APPLICATION = 'qrollcall.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+DB_NAME = config('DB_NAME', default='qrollcall')
+DB_USER = config('DB_USER', default='avnadmin')
+DB_PASSWORD = config('DB_PASSWORD', default='')
+DB_HOST = config('DB_HOST', default='mysql-211d288f-database254.k.aivencloud.com')
+DB_PORT = config('DB_PORT', default='21778')
+DB_SSL_MODE = config('DB_SSL_MODE', default='REQUIRED')
+
+DB_OPTIONS = {}
+if DB_SSL_MODE:
+    DB_OPTIONS['ssl'] = {'ssl-mode': DB_SSL_MODE}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME', default='qrollcall'),
-        'USER': config('DB_USER', default='avnadmin'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='mysql-211d288f-database254.k.aivencloud.com'),
-        'PORT': config('DB_PORT', default='21778'),
-        'OPTIONS': {
-            'ssl': {'ssl-mode': 'REQUIRED'},  # Required for SSL connection
-        },
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
+        'OPTIONS': DB_OPTIONS,
     }
 }
 
@@ -130,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Africa/Nairobi'
+TIME_ZONE = config("TIME_ZONE", default="Africa/Nairobi")
 
 USE_I18N = True
 
