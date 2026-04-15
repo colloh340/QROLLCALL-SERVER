@@ -32,10 +32,8 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
-    "192.168.0.103",
-    "192.168.0.102",
-    "qrollcall-0d1b75b56f6e.herokuapp.com",
-    "192.168.0.100",
+    "192.168.94.120",
+  
 ]
 
 
@@ -66,9 +64,8 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",  # Add your live domain here
-    "http://192.168.0.102",   # For non-secure HTTP access (avoid in production)
-    "http://192.168.0.100",
-    "https://qrollcall-0d1b75b56f6e.herokuapp.com",
+    "http://192.168.94.120",   # For non-secure HTTP access (avoid in production)
+
 ]
 
 ROOT_URLCONF = 'qrollcall.urls'
