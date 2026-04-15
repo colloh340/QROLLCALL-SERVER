@@ -45,12 +45,10 @@ SECRET_KEY = config("SECRET", default="B85GBWT84VUD32JBCLA5RA5N")
 DEBUG = _coerce_bool(config("DEBUG", default=True), default=True)
 
 ALLOWED_HOSTS = [
+    "qrollcall.shopfity.co.ke",
     "127.0.0.1",
     "localhost",
-    "192.168.94.120",
-    "113.30.191.232",
 ]
-
 
 # Application definition
 
