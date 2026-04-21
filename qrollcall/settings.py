@@ -48,6 +48,9 @@ ALLOWED_HOSTS = [
     "qrollcall.shopfity.co.ke",
     "127.0.0.1",
     "localhost",
+    "10.60.63.120",
+    "192.168.137.13",
+    "192.168.8.17",
 ]
 
 # Application definition
@@ -77,7 +80,9 @@ MIDDLEWARE = [
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",  # Add your live domain here
-    "http://192.168.94.120",   # For non-secure HTTP access (avoid in production)
+    "http://10.60.63.120",   # For non-secure HTTP access (avoid in production)
+    "http://192.168.137.13",
+    "http://192.168.8.17",
     "http://113.30.191.232",
     "http://localhost:8000",  # development server
 
