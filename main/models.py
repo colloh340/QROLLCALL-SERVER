@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models import Max
+import re
 
 # Create your models here.
 class School(models.Model):
@@ -156,30 +157,34 @@ class Timetable(models.Model):
         return self.unit.unit_code
 
 def generate_school_id():
-    last_school = School.objects.aggregate(max_id=Max('school_id'))['max_id']
-    next_id = int(last_school.split('-')[-1]) + 1 if last_school else 1
+    next_id = _next_prefixed_id(School.objects.values_list("school_id", flat=True), "SCH")
     return f"SCH-{str(next_id).zfill(4)}"
 
 def generate_department_id():
-    last_department = Department.objects.aggregate(max_id=Max('department_id'))['max_id']
-    next_id = int(last_department.split('-')[-1]) + 1 if last_department else 1
+    next_id = _next_prefixed_id(Department.objects.values_list("department_id", flat=True), "DPT")
     return f"DPT-{str(next_id).zfill(4)}"
 
 def generate_course_id():
-    last_course = Course.objects.aggregate(max_id=Max('course_code'))['max_id']
-    next_id = int(last_course.split('-')[-1]) + 1 if last_course else 1
+    next_id = _next_prefixed_id(Course.objects.values_list("course_code", flat=True), "CRS")
     return f"CRS-{str(next_id).zfill(4)}"
 
 def generate_staff_id():
-    last_lecturer = Lecturer.objects.aggregate(max_id=Max('lecturer_id'))['max_id']
-    
-    if last_lecturer:
-        try:
-            int_id = int(last_lecturer.split('-')[-1])  # Extract numeric part
-            next_id = int_id + 1
-        except ValueError:
-            next_id = 1  # Fallback in case of an issue
-    else:
-        next_id = 1  # First lecturer ID
-
+    next_id = _next_prefixed_id(Lecturer.objects.values_list("lecturer_id", flat=True), "STAFF")
     return f"STAFF-{str(next_id).zfill(4)}"
+
+
+def _next_prefixed_id(existing_ids, prefix):
+    pattern = re.compile(rf"^{re.escape(prefix)}-(\d+)$")
+    max_numeric_id = 0
+
+    for value in existing_ids:
+        if not value:
+            continue
+
+        match = pattern.match(value)
+        if not match:
+            continue
+
+        max_numeric_id = max(max_numeric_id, int(match.group(1)))
+
+    return max_numeric_id + 1
