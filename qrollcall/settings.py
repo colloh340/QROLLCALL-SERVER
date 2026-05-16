@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
-import pymysql
 import os
+from pathlib import Path
+
+import pymysql
 from decouple import config, Csv
 pymysql.install_as_MySQLdb()
 
@@ -50,6 +51,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "10.60.63.120",
     "192.168.137.13",
+    "192.168.180.60",
     "192.168.8.17",
 ]
 
@@ -81,7 +83,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",  # Add your live domain here
     "http://10.60.63.120",   # For non-secure HTTP access (avoid in production)
-    "http://192.168.137.13",
+    "http://192.168.180.60",
     "http://192.168.8.17",
     "http://113.30.191.232",
     "http://localhost:8000",  # development server
@@ -89,7 +91,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 ROOT_URLCONF = 'qrollcall.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
