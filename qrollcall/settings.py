@@ -46,6 +46,7 @@ SECRET_KEY = config("SECRET", default="B85GBWT84VUD32JBCLA5RA5N")
 DEBUG = _coerce_bool(config("DEBUG", default=True), default=True)
 
 ALLOWED_HOSTS = [
+    "qrollcall-server.onrender.com",
     "qrollcall.shopfity.co.ke",
     "127.0.0.1",
     "localhost",
@@ -53,6 +54,7 @@ ALLOWED_HOSTS = [
     "192.168.137.13",
     "192.168.180.60",
     "192.168.8.17",
+    "192.168.228.120"
 ]
 
 # Application definition
@@ -84,10 +86,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",  # Add your live domain here
     "http://10.60.63.120",   # For non-secure HTTP access (avoid in production)
     "http://192.168.180.60",
-    "http://192.168.8.17",
-    "http://113.30.191.232",
-    "http://localhost:8000",  # development server
-
+    "http://192.168.228.120",
+    "https://qrollcall-server.onrender.com",
+    "https://qrollcall.shopfity.co.ke",
 ]
 
 ROOT_URLCONF = 'qrollcall.urls'
